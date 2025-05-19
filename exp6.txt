@@ -1,0 +1,219 @@
+Exp6 :
+
+mvn archetype:generate -DgroupId=com.example -DartifactId=hello-maven -
+DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+
+cd hello-maven
+
+mvn package
+
+mvn clean package
+
+
+sudo update-alternatives --config java
+sudo update-alternatives --config javac
+
+sudo apt install openjdk-21-jdk -y
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-
+stable/jenkins.io-2023.key
+echo &quot;deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]
+https://pkg.jenkins.io/debian-stable binary/&quot; | sudo tee
+/etc/apt/sources.list.d/jenkins.list &gt; /dev/null
+sudo apt update
+sudo apt install jenkins -y
+sudo systemctl status jenkins
+
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword   -> PUT INSIDE the jenkins login
+
+
+sudo apt update &amp;&amp; sudo apt install git -y
+git --version
+git config --global user.name &quot;Your Name&quot;
+git config --global user.email &quot;your-email@example.com&quot;
+git config --global init.defaultBranch main
+ssh-keygen -t rsa -b 4096 -C &quot;your-email@example.com&quot; -f ~/.ssh/id_rsa -N &quot;&quot;
+eval &quot;$(ssh-agent -s)&quot;
+ssh-add ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub  --> go to github settings >> ssh keys and copy the cat whtever ssh key u got
+ssh -T git@github.com
+go to settings -> developer settings -> pat -> create
+curl -H "Authorization: token YOUR_TOKEN" \
+     -d '{"name":"hello-maven", "private":false}' \
+     https://api.github.com/user/repos
+echo "# hello-maven" >> README.md  # Create README file
+git init                            # Initialize Git repo
+git add .                           # Stage ALL files
+git commit -m "first commit"        # Commit everything
+git branch -M main                  # Rename branch to 'main'
+git remote add origin git@github.com:azadCMRIT/hello-maven.git  # Add GitHub remote
+git push -u origin main             # Push to GitHub
+
+-------
+http://localhost:8080
+New Item -> maven -ci -> pipeline project
+pipeline {
+
+	agent any
+
+	stages {
+
+    	stage('Checkout') {
+
+        	steps {
+
+            	git branch: 'main', url: 'https://github.com/azadCMRIT/hello-maven.git' // Replace with your repository URL
+
+        	}
+
+    	}
+
+    	stage('Build') {
+
+        	steps {
+
+            	// Use 'mvn clean package' for Maven or 'gradle build' for Gradle
+
+            	sh 'mvn clean package'
+
+        	}
+
+    	}
+
+    	stage('Test') {
+
+        	steps {
+
+            	// Run unit tests using Maven or Gradle
+
+            	sh 'mvn test'
+
+        	}
+
+    	}
+
+    	// Add additional stages for deployment, code analysis, etc. as needed
+
+	}
+
+}
+-----
+use grooovy sandbox apply and save
+
+-----------------------------------------------
+exp 7 :
+
+sudo apt update
+sudo apt upgrade -y
+sudo apt install ansible -y
+ansible --version
+[local]
+localhost ansible_connection=local
+setup.yaml file:
+
+---
+- name: Basic Server Setup
+hosts: localhost
+become: yes # Use privilege escalation (sudo)
+
+tasks:
+- name: Update apt cache
+apt:
+update_cache: yes
+
+- name: Install curl
+apt:
+name: curl
+state: present
+
+ansible-playbook -i hosts.ini setup.yaml --
+ask-become-pass
+
+if password is asked, type “root” without
+double quotes or enter your sudo password
+
+
+------------------------------------------------
+
+Exp8 : 
+Do a. Creating Maven project
+b. Installing Jenkins
+c. Settting Git
+d. Pushing Maven project to Github
+e. Running Maven project through Jenkins pipeline script
+
+Create a file t.jar on Desktop
+
+/var/lib/jenkins/workspace/ :
+sudo nautilus
+Create deploy.yaml file with following contents
+
+
+---
+- name: Deploy Artifact to Localhost
+  hosts: localhost
+  become: true
+  become_user: student-devops
+  become_method: su
+
+  tasks:
+    - name: Copy the artifact to the target location
+      copy:
+        src: "/var/lib/jenkins/workspace/maven/target/hello-maven-1.0-SNAPSHOT.jar"
+        dest: "/home/student-devops/Desktop/t.jar"
+
+sudo nano hosts.ini 
+[local]  
+localhost ansible_connection=local
+
+in the pipeline :
+
+pipeline { 
+    agent any 
+    
+    stages { 
+
+        stage('Checkout') { 
+            steps { 
+                git branch: 'main', url: 'https://github.com/azadCMRIT/hello-maven2.git' 
+            } 
+        } 
+
+        stage('Build') { 
+            steps { 
+                sh 'mvn clean package' 
+            } 
+        }
+
+        stage('Test') { 
+            steps { 
+                sh 'mvn test' 
+            } 
+        } 
+
+        stage('Archive Artifacts') { 
+            steps { 
+                archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true 
+            } 
+        } 
+
+        stage('Deploy') { 
+            steps { 
+                sh """ 
+                export ANSIBLE_HOST_KEY_CHECKING=False 
+                ansible-playbook -i /var/lib/jenkins/workspace/maven2/hosts.ini /var/lib/jenkins/workspace/maven2/deploy.yaml --extra-vars='ansible_become_pass=login@123' 
+                """ 
+                // Enter student password above 
+            } 
+        } 
+    } 
+}
+
+
+Build now 
+See console output 
+see the t.jar file 
+
+-------------------------------------------------------------------------------------------------
+
+
+
