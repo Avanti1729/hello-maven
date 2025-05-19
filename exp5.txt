@@ -1,0 +1,271 @@
+
+
+Experiment 5:
+
+1. db.users.insertMany([
+{ name: "Alice", age: 30, gender: "Female", city: "New York" },
+{ name: "Bob", age: 25, gender: "Male", city: "Los Angeles" },
+{ name: "Charlie", age: 35, gender: "Male", city: "Chicago" },
+{ name: "David", age: 28, gender: "Male", city: "San Francisco" },
+{ name: "Eve", age: 22, gender: "Female", city: "Boston" },
+{ name: "Frank", age: 40, gender: "Male", city: "Houston" },
+{ name: "Grace", age: 27, gender: "Female", city: "Miami" },
+{ name: "Hannah", age: 29, gender: "Female", city: "Seattle" },
+{ name: "Isaac", age: 31, gender: "Male", city: "Denver" },
+{ name: "Jack", age: 26, gender: "Male", city: "Dallas" }
+])
+
+2. db.users.countDocuments({})
+
+3. db.users.countDocuments({ age: { $gt: 25 } })
+
+4. db.users.find().sort({ age: 1 })
+
+5. db.users.find().skip(9)
+
+6.  db.users.aggregate([
+{ $match: { age: { $gt: 25 } } }, // Filter users older than 25
+{ $group: { _id: "$gender", count: { $sum: 1 } } }, // Group by gender
+{ $sort: { count: -1 } }, // Sort in descending order
+{ $limit: 5 } // Limit to top 5 results
+])
+
+7. db.users.find().sort({ age: -1 }).skip(3).limit(5)
+
+
+
+
+Experiment 6:
+1. employees.txt (Employee Data)
+101,John,IT,50000
+102,Susan,HR,60000
+103,David,IT,55000
+104,Emma,Finance,75000
+105,James,HR,62000
+106,Robert,IT,58000
+
+IT,Information Technology
+HR,Human Resources
+Finance,Finance Department
+
+
+1. employees = LOAD 'employees.txt' USING PigStorage(',') AS (id:int, name:chararray,
+dept:chararray, salary:int);
+
+sorted_employees = ORDER employees BY salary DESC;
+
+DUMP sorted_employees;
+
+2. employees = LOAD 'employees.txt' USING PigStorage(',') AS (id:int, name:chararray,
+dept:chararray, salary:int);
+
+grouped_employees = GROUP employees BY dept;
+
+DUMP grouped_employees;
+
+3.  employees = LOAD 'employees.txt' USING PigStorage(',') AS (id:int, name:chararray,
+dept:chararray, salary:int);
+
+departments = LOAD 'departments.txt' USING PigStorage(',') AS (dept_code:chararray,
+dept_name:chararray);
+
+joined_data = JOIN employees BY dept, departments BY dept_code;
+
+projected_data = FOREACH joined_data GENERATE id, name, dept_name, salary;
+
+DUMP projected_data;
+
+
+4.  projected_data = FOREACH employees GENERATE name, salary;
+   
+DUMP projected_data;
+
+5. employees = LOAD 'employees.txt' USING PigStorage(',') AS (id:int, name:chararray,
+dept:chararray, salary:int);
+
+filtered_employees = FILTER employees BY salary > 55000;
+
+DUMP filtered_employees;
+
+
+
+
+
+
+Experiment 7:
+
+CREATE DATABASE IF NOT EXISTS company_db
+COMMENT 'Database for storing company-related data';
+Alter Database (set properties)
+ALTER DATABASE company_db SET DBPROPERTIES ('updated_by'='admin',
+'version'='2.0');
+Drop Database
+DROP DATABASE IF EXISTS company_db CASCADE;
+Use CASCADE to remove all tables inside the database.
+2. TABLE Operations
+Create Table
+CREATE TABLE employees (
+id INT,
+name STRING,
+salary FLOAT
+)
+COMMENT 'Employee details table'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+Alter Table
+-- Add a new column
+ALTER TABLE employees ADD COLUMNS (department STRING);
+-- Rename the table
+ALTER TABLE employees RENAME TO staff;
+Drop Table
+DROP TABLE IF EXISTS staff;
+3. VIEW Operations
+Create View
+CREATE VIEW high_salary_employees AS
+SELECT * FROM employees WHERE salary > 50000;
+Alter View
+Hive doesn't support altering views directly. You can drop and recreate:
+DROP VIEW IF EXISTS high_salary_employees;
+CREATE VIEW high_salary_employees AS
+SELECT * FROM employees WHERE salary > 60000;
+Drop View
+DROP VIEW IF EXISTS high_salary_employees;
+4. FUNCTION Operations (UDFs)
+Custom UDFs require Java classes, but here’s how you register and drop them in
+Hive:
+Create/Register a UDF
+CREATE FUNCTION to_upper_case AS 'com.example.hive.udf.ToUpperCase'
+USING JAR 'hdfs:///user/hive/udf/ToUpperCase.jar';
+Drop Function
+DROP FUNCTION IF EXISTS to_upper_case;
+5. INDEX Operations
+Indexing is rarely used in modern Hive due to improvements in file formats and
+partitioning, but here's how:
+Create Index
+CREATE INDEX idx_salary
+ON TABLE employees (salary)
+AS 'COMPACT'
+WITH DEFERRED REBUILD;
+Rebuild Index
+ALTER INDEX idx_salary ON employees REBUILD;
+Drop Index
+DROP INDEX IF EXISTS idx_salary ON employees;
+
+1. Create Employee Database
+CREATE DATABASE IF NOT EXISTS employee
+COMMENT 'Database for employee management system'
+WITH DBPROPERTIES (
+'created_by' = 'Anushree Paul',
+'purpose' = 'Store employee-related data'
+);
+2. Create Table in Employee Database
+Switch to Database
+USE employee;
+Create Table
+CREATE TABLE IF NOT EXISTS employee_info (
+emp_id INT,
+name STRING,
+department department STRING,
+salary FLOAT
+)
+COMMENT 'Basic employee information'
+
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+3. Alter Table
+-- Add a new column
+ALTER TABLE employee_info ADD COLUMNS (email STRING);
+-- Rename column (Hive 0.14+)
+ALTER TABLE employee_info CHANGE salary monthly_salary FLOAT;
+4. Drop Table
+DROP TABLE IF EXISTS employee_info;
+5. Create a View
+Create View
+CREATE VIEW high_paid_employees AS
+SELECT emp_id, name, monthly_salary
+FROM employee_info
+WHERE monthly_salary > 50000;
+Drop View
+DROP VIEW IF EXISTS high_paid_employees;
+6. Create UDF Function (if you have a custom JAR)
+Register Custom Function
+CREATE FUNCTION to_upper AS 'com.example.hive.udf.ToUpper'
+USING JAR 'hdfs:///user/hive/udfs/ToUpper.jar';
+Drop Function
+DROP FUNCTION IF EXISTS to_upper;
+7. Index (Optional/Advanced)
+Create Index
+CREATE INDEX idx_department
+ON TABLE employee_info (department)
+AS 'COMPACT'
+WITH DEFERRED REBUILD;
+Rebuild Index
+ALTER INDEX idx_department ON employee_info REBUILD;
+Drop Index
+DROP INDEX IF EXISTS idx_department ON employee_info;
+
+
+
+
+
+Experiment 8:
+
+
+import re
+from pyspark import SparkContext
+
+sc = SparkContext("local", "WordCountWithoutPunctuation")
+
+# Read the input text file
+text_file = sc.textFile("file:///home/aindsl504022/input.txt")
+
+# Perform MapReduce with punctuation removal
+word_counts = text_file \
+.flatMap(lambda line: re.sub(r'[^\w\s]', '', line).split()) \
+.map(lambda word: (word.lower(), 1)) \
+.reduceByKey(lambda a, b: a + b)
+
+# Collect and display the results
+results = word_counts.collect()
+for word, count in results:
+print(f"{word}: {count}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
