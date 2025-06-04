@@ -1,39 +1,146 @@
+Exp1 :
+
+sudo apt install maven
+mvn --version
+sudo apt install openjdk-11-jdk
+sudo apt install openjdk-8-jdk
+sudo apt install openjdk-17-jdk
+sudo apt install openjdk-21-jdk
+sudo update-alternatives --config java
+sudo update-alternatives --config javac
+sudo apt install gradle 
+gradle --version
+
+------------------------------------------------------------------
+Exp 2:
+mvn archetype:generate -DgroupId=com.example -DartifactId=hello-maven -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+cd hello-maven
+gedit pom.xml
+mvn clean package
+java -cp target/hello-maven-1.0-SNAPSHOT.jar com.example.App
+
+
+plugin program:
+
+
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>hello-maven</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>hello-maven</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+  <dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.13.2</version>
+    <scope>test</scope>
+  </dependency>
+</dependencies>
+
+<build>
+  <plugins>
+    <!-- Plugin to run Java classes -->
+    <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>exec-maven-plugin</artifactId>
+      <version>3.1.0</version>
+      <configuration>
+        <mainClass>com.example.App</mainClass>
+      </configuration>
+    </plugin>
+
+    <!-- Compiler Plugin to compile the source code with Java 8 -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.8.1</version>
+      <configuration>
+        <source>1.8</source>
+        <target>1.8</target>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+
+
+</project>	
+
+
+-------------------------------------------------------------------
+Exp3:
+mkdir gradleProject
+cd gradleProject
+gradle init --type java-application
+gradle build
+gedit build.gradle 
+
+task hello{
+	doLast{
+		println "Hello,World"
+	}
+}
+gradle run
+
+---------------------------------------------------------------------
+Exp4:
+
+Do exp2
+Do exp3 till gedit build.gradle 
+build.gradle == mainClassName = 'com.example.App'
+mv /home/hello-maven/src/main/java/com/example/App.java /home/gradleProject/src/main/java
+cd gradleProject/src/test/java
+rm AppTest.java
+cd 
+cd gradleProject
+gradle build
+gradle run
+
+-----------------------------------------------------------------------
+Exp5:
+sudo apt install openjdk-21-jdk -y
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt update
+sudo apt install jenkins -y
+sudo systemctl status jenkins
+copy the password     ->>>>>>>>>>>>>>>>>>>>   sudo cat /var/lib/jenkins/secrets/initialAdminPassword   -> PUT INSIDE the jenkins login
+go to localhost:8080 and paste the password
+
+----------------------------------------------------------------------
+
 Exp6 :
 
-mvn archetype:generate -DgroupId=com.example -DartifactId=hello-maven -
-DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-
+mvn archetype:generate -DgroupId=com.example -DartifactId=hello-maven -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
 cd hello-maven
-
-mvn package
-
 mvn clean package
-
-
 sudo update-alternatives --config java
 sudo update-alternatives --config javac
 
 sudo apt install openjdk-21-jdk -y
-sudo wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-
-stable/jenkins.io-2023.key
-echo &quot;deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]
-https://pkg.jenkins.io/debian-stable binary/&quot; | sudo tee
-/etc/apt/sources.list.d/jenkins.list &gt; /dev/null
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
 sudo apt update
 sudo apt install jenkins -y
 sudo systemctl status jenkins
-
-sudo cat /var/lib/jenkins/secrets/initialAdminPassword   -> PUT INSIDE the jenkins login
+copy the password     ->>>>>>>>>>>>>>>>>>>>   sudo cat /var/lib/jenkins/secrets/initialAdminPassword   -> PUT INSIDE the jenkins login
+go to localhost:8080 and paste the password
 
 
 sudo apt update && sudo apt install git -y
 git --version
-git config --global user.name "Your Name&"
+git config --global user.name "Your Name"
 git config --global user.email "your-email@example.com"
 git config --global init.defaultBranch main
 ssh-keygen -t rsa -b 4096 -C "your-email@example.com" -f ~/.ssh/id_rsa -N ""
+
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
+
 cat ~/.ssh/id_rsa.pub  --> go to github settings >> ssh keys and copy the cat whtever ssh key u got
 ssh -T git@github.com
 go to settings -> developer settings -> pat -> create
@@ -99,7 +206,7 @@ pipeline {
 -----
 use grooovy sandbox apply and save
 
------------------------------------------------
+---------------------------------------------------------------------------------------------
 exp 7 :
 
 sudo apt update
@@ -132,7 +239,7 @@ if password is asked, type “root” without
 double quotes or enter your sudo password
 
 
-------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
 
 Exp8 : 
 Do a. Creating Maven project
